@@ -7,10 +7,9 @@ using UnityEngine;
 public class RobotArm : MonoBehaviour
 {
     [SerializeField] private RobotArmPart _armPartPrefab;
+    [SerializeField] private ConfigurableJoint _handJoint;
     [SerializeField] private Rigidbody _handRigidbody;
     [SerializeField] private List<RobotArmPart> _armParts = new List<RobotArmPart>();
-
-    private ConfigurableJoint _handConfigurableJoint;
 
     private int initArmsQuantity = 0;
 
@@ -21,11 +20,10 @@ public class RobotArm : MonoBehaviour
     private const float BaseForwardForce = 10f;
     private const float BaseRotationForce = 100f;
 
-    public Transform Hand => _handRigidbody.transform;
+    public Transform Hand => _handJoint.transform;
 
     void Awake()
     {
-        _handConfigurableJoint = _handRigidbody.GetComponent<ConfigurableJoint>();
         initArmsQuantity = _armParts.Count;
     }
 
@@ -110,11 +108,13 @@ public class RobotArm : MonoBehaviour
     
     private void ConnectHandTo(RobotArmPart robotArmPart)
     {
-        _handConfigurableJoint.connectedBody = null;
+        _handJoint.connectedBody = null;
         _handRigidbody.velocity = Vector3.zero;
         _handRigidbody.angularVelocity = Vector3.zero;
-        _handRigidbody.transform.position = robotArmPart.transform.position + robotArmPart.transform.forward;
-        _handRigidbody.transform.rotation = robotArmPart.transform.rotation;
-        _handConfigurableJoint.connectedBody = robotArmPart.RigidBody;
+        _handJoint.secondaryAxis = _handJoint.secondaryAxis;
+        _handJoint.transform.position = robotArmPart.transform.position + robotArmPart.transform.forward;
+        _handJoint.transform.rotation = robotArmPart.transform.rotation;
+        _handJoint.connectedBody = robotArmPart.RigidBody;
+        
     }
 }
