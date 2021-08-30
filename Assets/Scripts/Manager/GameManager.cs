@@ -1,12 +1,13 @@
+using System;
 using Manager;
+using UI;
 using UnityEngine;
 
 public class GameManager : MonoBehaviour
 {
         [Header("UI")]
-        // [SerializeField] private GameUI gameUi;
+        [SerializeField] private PauseUI _pauseUi;
 
-        // public GameUI UI => gameUi;
         private bool isPaused = false;
 
         public static GameManager Instance { get; private set; }
@@ -24,7 +25,7 @@ public class GameManager : MonoBehaviour
         {
             if (Instance == null)
             {
-                _sceneLoader = transform.GetComponent<SceneLoader>();
+                _sceneLoader = transform.GetComponentInChildren<SceneLoader>();
                 _levelManager = transform.GetComponent<LevelManager>();
                 
                 Instance = this;
@@ -36,11 +37,11 @@ public class GameManager : MonoBehaviour
             }
         }
 
-        void Start()
+        private void Start()
         {
             LockCursor();
         }
-        
+
         private void Update()
         {
             if (Input.GetKeyDown(KeyCode.R))
@@ -77,14 +78,14 @@ public class GameManager : MonoBehaviour
         private void Pause()
         {
             Time.timeScale = 0;
-            // gameUi.PauseUI.SetActive(true);
+            _pauseUi.gameObject.SetActive(true);
             UnlockCursor();
         }
 
-        private void Resume()
+        public void Resume()
         {
             Time.timeScale = 1;
-            // gameUi.PauseUI.SetActive(false);
+            _pauseUi.gameObject.SetActive(false);
             LockCursor();
         }
 
@@ -96,7 +97,8 @@ public class GameManager : MonoBehaviour
         
         public void GoToMainMenu()
         {
-            _sceneLoader.GoToScene("MainMenu");
+            Time.timeScale = 1;
+            LevelManager.GoToMainMenu();
         }
 
         public void SetCamera(CameraMovement cameraMovement)

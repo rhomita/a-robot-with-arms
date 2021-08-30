@@ -7,23 +7,28 @@ using UnityEngine;
 public class RobotArm : MonoBehaviour
 {
     [SerializeField] private RobotArmPart _armPartPrefab;
-    [SerializeField] private ConfigurableJoint _handJoint;
-    [SerializeField] private Rigidbody _handRigidbody;
+    [SerializeField] private GameObject _hand;
     [SerializeField] private List<RobotArmPart> _armParts = new List<RobotArmPart>();
+    
+    private ConfigurableJoint _handJoint;
+    private Rigidbody _handRigidbody;
 
     private int initArmsQuantity = 0;
 
     private float _extendCooldown = 0f;
     private float _reduceCooldown = 0f;
 
-    private const float ResizeCooldown = .05f;
-    private const float BaseRotationForce = 120f;
+    private const float ResizeCooldown = .1f;
+    private const float MoveSpeed = 120f;
 
-    public Transform Hand => _handJoint.transform;
+    public Transform Hand => _hand.transform;
 
     void Awake()
     {
         initArmsQuantity = _armParts.Count;
+        
+        _handJoint = _hand.GetComponent<ConfigurableJoint>();
+        _handRigidbody = _hand.GetComponent<Rigidbody>();
     }
 
     void Update()
@@ -39,9 +44,9 @@ public class RobotArm : MonoBehaviour
         }
     }
 
-    public void Rotate(Vector3 direction)
+    public void Move(Vector3 direction)
     {
-        _handRigidbody.AddRelativeForce(direction * (BaseRotationForce * Time.fixedDeltaTime), ForceMode.VelocityChange);
+        _handRigidbody.AddForce(direction * (MoveSpeed * Time.deltaTime), ForceMode.VelocityChange);
     }
 
     public void Extend()

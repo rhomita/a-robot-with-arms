@@ -10,23 +10,24 @@ public class Robot : MonoBehaviour
 {
     [SerializeField] private Rigidbody _body;
     [SerializeField] private List<RobotArm> _arms = new List<RobotArm>();
-    
+
     private int _armSelected;
     private bool _armsEnabled = false;
     private Vector2 _input;
+    private float _heightInput;
     private Animator _animator;
 
     private float _cooldownToResetArms = CooldownToResetarms;
-    
+
     private const float Speed = 1000f;
     private const float TurnSpeed = 3f;
     private const float CooldownToResetarms = 2f;
-    
+
     void Awake()
     {
         _animator = transform.GetComponent<Animator>();
     }
-    
+
     void Start()
     {
         _armSelected = 1;
@@ -39,7 +40,7 @@ public class Robot : MonoBehaviour
         {
             ResetArms();
         }
-        
+
         if (Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.Space))
         {
             _armsEnabled = !_armsEnabled;
@@ -56,6 +57,19 @@ public class Robot : MonoBehaviour
         }
 
         _input = new Vector2(Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical"));
+        _heightInput = Input.GetAxisRaw("Height");
+        if (_armsEnabled)
+        {
+            if (Input.GetKey(KeyCode.LeftShift))
+            {
+                _arms[_armSelected].Extend();
+            }
+
+            if (Input.GetKey(KeyCode.LeftControl))
+            {
+                _arms[_armSelected].Reduce();
+            }
+        }
     }
 
     private void FixedUpdate()
@@ -63,26 +77,13 @@ public class Robot : MonoBehaviour
         if (_armsEnabled)
         {
             _animator.SetBool("IsMoving", false);
-            if (_input.y > 0.1f)
-            {
-                _arms[_armSelected].Extend();
-            }
-
-            if (_input.y < -0.1f)
-            {
-                _arms[_armSelected].Reduce();
-            }
-
-            if (Mathf.Abs(_input.x) > 0.1f)
-            {
-                _arms[_armSelected].Rotate(new Vector3(_input.x, 0, 0));
-            }
+            _arms[_armSelected].Move(new Vector3(_input.x, _heightInput, _input.y));
         }
         else
         {
             bool isMoving = _input.magnitude > 0.1f;
             _animator.SetBool("IsMoving", isMoving);
-            
+
             if (isMoving)
             {
                 if (_cooldownToResetArms >= 0)
@@ -93,8 +94,9 @@ public class Robot : MonoBehaviour
                         ResetArms();
                     }
                 }
+
                 _body.velocity = _body.transform.forward * (Time.deltaTime * Speed);
-                
+
                 Quaternion rotation = Quaternion.LookRotation(new Vector3(_input.x, 0, _input.y));
                 rotation = Quaternion.Slerp(_body.rotation, rotation, Time.deltaTime * TurnSpeed);
                 _body.MoveRotation(rotation);

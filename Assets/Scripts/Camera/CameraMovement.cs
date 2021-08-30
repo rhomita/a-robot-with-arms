@@ -6,6 +6,7 @@ public class CameraMovement : MonoBehaviour
 {
     private Vector3 _offset = new Vector3(0, 30, -20);
     private Transform _target;
+    private bool _blockChange = false;
 
     private const float MoveSpeed = 3f;
 
@@ -23,6 +24,7 @@ public class CameraMovement : MonoBehaviour
 
     public void SetTarget(Transform target)
     {
+        if (_blockChange) return;
         _target = target;
     }
 
@@ -35,7 +37,9 @@ public class CameraMovement : MonoBehaviour
     {
         Transform previousTarget = _target;
         SetTarget(target);
+        _blockChange = true;
         yield return new WaitForSeconds(seconds);
+        _blockChange = false;
         SetTarget(previousTarget);
     }
 }
