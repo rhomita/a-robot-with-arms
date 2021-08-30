@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 456558370281302520}
   - component: {fileID: 456558370281302523}
   m_Layer: 0
-  m_Name: RightArmPart
+  m_Name: ArmPart
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -77,7 +77,7 @@ ConfigurableJoint:
   m_Anchor: {x: 0, y: 0.5, z: 0}
   m_Axis: {x: 1, y: 0, z: 0}
   m_AutoConfigureConnectedAnchor: 1
-  m_ConnectedAnchor: {x: 6.5718837, y: 2.0826395, z: 0.13884272}
+  m_ConnectedAnchor: {x: 4.797, y: 2.52, z: 1.98}
   serializedVersion: 2
   m_SecondaryAxis: {x: 0, y: 1, z: 0}
   m_XMotion: 0

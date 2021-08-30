@@ -4,23 +4,38 @@ using UnityEngine;
 
 public class CameraMovement : MonoBehaviour
 {
-    [SerializeField] private Vector3 _offset;
+    private Vector3 _offset = new Vector3(0, 30, -20);
     private Transform _target;
 
-    private const float MoveSpeed = 10f;
+    private const float MoveSpeed = 3f;
 
-    void Start()
+    void Awake()
     {
-        _target = GameManager.Instance.Player;
+        GameManager.Instance.SetCamera(this);
+        transform.rotation = Quaternion.Euler(55, 0, 0);
     }
-
+    
     void LateUpdate()
     {
+        if (_target == null) return;
         transform.position = Vector3.Slerp(transform.position, _target.position + _offset, Time.deltaTime * MoveSpeed);
     }
 
     public void SetTarget(Transform target)
     {
         _target = target;
+    }
+
+    public void SetTemporaryTarget(Transform target, float seconds)
+    {
+        StartCoroutine(SetTemporaryTargetCoroutine(target, seconds));
+    }
+
+    private IEnumerator SetTemporaryTargetCoroutine(Transform target, float seconds)
+    {
+        Transform previousTarget = _target;
+        SetTarget(target);
+        yield return new WaitForSeconds(seconds);
+        SetTarget(previousTarget);
     }
 }

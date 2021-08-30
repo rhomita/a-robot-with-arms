@@ -16,9 +16,8 @@ public class RobotArm : MonoBehaviour
     private float _extendCooldown = 0f;
     private float _reduceCooldown = 0f;
 
-    private const float ResizeCooldown = .1f;
-    private const float BaseForwardForce = 10f;
-    private const float BaseRotationForce = 100f;
+    private const float ResizeCooldown = .05f;
+    private const float BaseRotationForce = 120f;
 
     public Transform Hand => _handJoint.transform;
 
@@ -40,16 +39,9 @@ public class RobotArm : MonoBehaviour
         }
     }
 
-    public void MoveForward()
-    {
-        _handRigidbody.AddForce(
-            Hand.forward * (BaseForwardForce * _armParts.Count * Time.deltaTime),
-            ForceMode.VelocityChange);
-    }
-
     public void Rotate(Vector3 direction)
     {
-        _handRigidbody.AddRelativeForce(direction * (BaseRotationForce * Time.deltaTime), ForceMode.VelocityChange);
+        _handRigidbody.AddRelativeForce(direction * (BaseRotationForce * Time.fixedDeltaTime), ForceMode.VelocityChange);
     }
 
     public void Extend()

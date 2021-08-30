@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,52 +8,116 @@ using UnityEngine.UI;
 
 public class Robot : MonoBehaviour
 {
+    [SerializeField] private Rigidbody _body;
     [SerializeField] private List<RobotArm> _arms = new List<RobotArm>();
-    private int selectedArm = 0;
+    
+    private int _armSelected;
+    private bool _armsEnabled = false;
+    private Vector2 _input;
+    private Animator _animator;
+
+    private float _cooldownToResetArms = CooldownToResetarms;
+    
+    private const float Speed = 1000f;
+    private const float TurnSpeed = 3f;
+    private const float CooldownToResetarms = 2f;
+    
+    void Awake()
+    {
+        _animator = transform.GetComponent<Animator>();
+    }
+    
+    void Start()
+    {
+        _armSelected = 1;
+        GameManager.Instance.CameraMovement.SetTarget(_body.transform);
+    }
 
     void Update()
     {
         if (Input.GetKeyDown(KeyCode.H))
         {
-            _arms[selectedArm].Reset();
+            ResetArms();
         }
         
-        if (Input.GetKey(KeyCode.Space))
+        if (Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.Space))
         {
-            _arms[selectedArm].Extend();
+            _armsEnabled = !_armsEnabled;
+            if (_armsEnabled)
+            {
+                _body.velocity = Vector3.zero;
+                ChangeSelected();
+            }
+            else
+            {
+                _cooldownToResetArms = CooldownToResetarms;
+                GameManager.Instance.CameraMovement.SetTarget(_body.transform);
+            }
         }
 
-        if (Input.GetKey(KeyCode.S))
-        {
-            _arms[selectedArm].Reduce();
-        }
+        _input = new Vector2(Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical"));
+    }
 
-        if (Input.GetKeyDown(KeyCode.Return))
+    private void FixedUpdate()
+    {
+        if (_armsEnabled)
         {
-            ChangeSelected();
+            _animator.SetBool("IsMoving", false);
+            if (_input.y > 0.1f)
+            {
+                _arms[_armSelected].Extend();
+            }
+
+            if (_input.y < -0.1f)
+            {
+                _arms[_armSelected].Reduce();
+            }
+
+            if (Mathf.Abs(_input.x) > 0.1f)
+            {
+                _arms[_armSelected].Rotate(new Vector3(_input.x, 0, 0));
+            }
         }
-        
-        if (Input.GetKey(KeyCode.W))
+        else
         {
-            _arms[selectedArm].MoveForward();
+            bool isMoving = _input.magnitude > 0.1f;
+            _animator.SetBool("IsMoving", isMoving);
+            
+            if (isMoving)
+            {
+                if (_cooldownToResetArms >= 0)
+                {
+                    _cooldownToResetArms -= Time.deltaTime;
+                    if (_cooldownToResetArms <= 0)
+                    {
+                        ResetArms();
+                    }
+                }
+                _body.velocity = _body.transform.forward * (Time.deltaTime * Speed);
+                
+                Quaternion rotation = Quaternion.LookRotation(new Vector3(_input.x, 0, _input.y));
+                rotation = Quaternion.Slerp(_body.rotation, rotation, Time.deltaTime * TurnSpeed);
+                _body.MoveRotation(rotation);
+            }
+            else
+            {
+                _body.velocity = Vector3.zero;
+            }
         }
-        
-        if (Input.GetKey(KeyCode.D))
-        {
-            _arms[selectedArm].Rotate(Vector3.right);
-        }
-        
-        if (Input.GetKey(KeyCode.A))
-        {
-            _arms[selectedArm].Rotate(-Vector3.right);   
-        }
-        
     }
 
     void ChangeSelected()
     {
-        selectedArm++;
-        selectedArm = selectedArm % _arms.Count;
-        GameManager.Instance.CameraMovement.SetTarget(_arms[selectedArm].Hand);
+        _armSelected++;
+        _armSelected = _armSelected % _arms.Count;
+        GameManager.Instance.CameraMovement.SetTarget(_arms[_armSelected].Hand);
+    }
+
+    private void ResetArms()
+    {
+        foreach (RobotArm arm in _arms)
+        {
+            arm.Reset();
+        }
     }
 }
