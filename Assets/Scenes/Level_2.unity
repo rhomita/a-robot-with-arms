@@ -180,7 +180,8 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Press 'Space' to control your hand and then 'SHIFT' to extend it!
+  m_text: Press 'Space' to control your hand and then keep pressed 'SHIFT' to extend
+    it!
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 4225eb2eaed6d3043a72f79507a25e66, type: 2}
   m_sharedMaterial: {fileID: 1282217160063963234, guid: 4225eb2eaed6d3043a72f79507a25e66, type: 2}

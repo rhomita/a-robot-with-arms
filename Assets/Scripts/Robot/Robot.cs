@@ -23,7 +23,7 @@ public class Robot : MonoBehaviour
 
     private const float Speed = 1000f;
     private const float TurnSpeed = 3f;
-    private const float CooldownToResetarms = 2f;
+    private const float CooldownToResetarms = 1.2f;
 
     private SoundEffect _switchSoundEffect;
 

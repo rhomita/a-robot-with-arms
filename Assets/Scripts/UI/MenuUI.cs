@@ -1,7 +1,5 @@
 ﻿using Manager;
-using UnityEditor.SearchService;
 using UnityEngine;
-using UnityEngine.InputSystem;
 
 namespace UI
 {
