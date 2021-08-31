@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class CameraMovement : MonoBehaviour
 {
-    private Vector3 _offset = new Vector3(0, 30, -20);
+    private Vector3 _offset = new Vector3(0, 60, -45);
     private Transform _target;
     private bool _blockChange = false;
 

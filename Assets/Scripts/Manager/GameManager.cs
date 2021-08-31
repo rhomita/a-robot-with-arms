@@ -99,6 +99,7 @@ public class GameManager : MonoBehaviour
         {
             Time.timeScale = 1;
             LevelManager.GoToMainMenu();
+            Destroy(gameObject, 2);
         }
 
         public void SetCamera(CameraMovement cameraMovement)

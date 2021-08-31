@@ -7,18 +7,16 @@ namespace Puzzle
 {
     public class Door : MonoBehaviour
     {
-        [Header("Behaviour")] 
-        [SerializeField] private List<DoorTrigger> _doorTriggers;
+        [Header("Behaviour")] [SerializeField] private List<Trigger> _doorTriggers;
         [SerializeField] private Transform _doorMesh;
         [SerializeField] private Vector3 _doorOpenOffset;
         [SerializeField] private bool _canBeClosed = false;
 
-        [Header("Visual")] 
-        [SerializeField] private Material _activatedMaterial;
+        [Header("Visual")] [SerializeField] private Material _activatedMaterial;
         [SerializeField] private Material _deactivatedMaterial;
         [SerializeField] private MeshRenderer _meshToChangeMaterial;
         [SerializeField] private int _materialToChangeIndex;
-        
+
         private Vector3 _doorOpenPosition;
         private Vector3 _doorClosePosition;
         private bool _isClosed = true;
@@ -36,20 +34,20 @@ namespace Puzzle
             _collider = transform.GetComponent<Collider>();
             _audioSource = transform.GetComponent<SoundEffect>();
         }
-        
+
         void Start()
         {
             _doorOpenPosition = _doorMesh.position + _doorOpenOffset;
             _doorClosePosition = _doorMesh.position;
 
-            foreach (DoorTrigger doorTrigger in _doorTriggers)
+            foreach (Trigger doorTrigger in _doorTriggers)
             {
                 doorTrigger.OnActivateTrigger += () =>
                 {
                     _triggersActivated++;
                     CheckDoor();
                 };
-                
+
                 doorTrigger.OnDeactivateTrigger += () =>
                 {
                     _triggersActivated--;
@@ -80,8 +78,12 @@ namespace Puzzle
             {
                 StopCoroutine(_movingCoroutine);
             }
-            GameManager.Instance.CameraMovement.SetTemporaryTarget(transform, SecondsToShowCamera);
-            
+
+            if (!_canBeClosed)
+            {
+                GameManager.Instance.CameraMovement.SetTemporaryTarget(transform, SecondsToShowCamera);
+            }
+
             Material[] materials = _meshToChangeMaterial.materials;
             materials[_materialToChangeIndex] = _activatedMaterial;
             _meshToChangeMaterial.materials = materials;
@@ -89,12 +91,12 @@ namespace Puzzle
 
             if (!_canBeClosed)
             {
-                foreach (DoorTrigger doorTrigger in _doorTriggers)
+                foreach (Trigger doorTrigger in _doorTriggers)
                 {
                     Destroy(doorTrigger);
                 }
             }
-            
+
             _movingCoroutine = StartCoroutine(ChangePosition(_doorOpenPosition));
         }
 
@@ -109,16 +111,14 @@ namespace Puzzle
             {
                 StopCoroutine(_movingCoroutine);
             }
-            
-            GameManager.Instance.CameraMovement.SetTemporaryTarget(transform, SecondsToShowCamera);
-            
+
             Material[] materials = _meshToChangeMaterial.materials;
             materials[_materialToChangeIndex] = _deactivatedMaterial;
             _meshToChangeMaterial.materials = materials;
-            
+
             _movingCoroutine = StartCoroutine(ChangePosition(_doorClosePosition));
         }
-        
+
         private IEnumerator ChangePosition(Vector3 endPosition)
         {
             Vector3 startPosition = _doorMesh.position;
@@ -134,6 +134,5 @@ namespace Puzzle
 
             yield return null;
         }
-
     }
 }

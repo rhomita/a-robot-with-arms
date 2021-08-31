@@ -6,7 +6,7 @@ namespace Manager
     {
         private const string MainLevel = "MainMenu";
         private const string LevelPrefix = "Level_";
-        private const int MaxLevels = 5;
+        private const int MaxLevels = 11;
         private int _level = 0;
 
         public void GoToNextLevel()

@@ -1,5 +1,3 @@
-using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Audio;
@@ -10,8 +8,9 @@ public class RobotArm : MonoBehaviour
     [SerializeField] private RobotArmPart _armPartPrefab;
     [SerializeField] private GameObject _hand;
     [SerializeField] private List<RobotArmPart> _armParts = new List<RobotArmPart>();
-    [SerializeField] private SoundEffect _extendSoundEffect;
-    
+    [SerializeField] private ParticleSystem _extendParticles;
+
+    private SoundEffect _extendSoundEffect;
     private ConfigurableJoint _handJoint;
     private Rigidbody _handRigidbody;
 
@@ -34,7 +33,7 @@ public class RobotArm : MonoBehaviour
     {
         initArmsQuantity = _armParts.Count;
         _extendPitch = MinExtendPitch;
-        
+
         _extendSoundEffect = transform.GetComponent<SoundEffect>();
         _handJoint = _hand.GetComponent<ConfigurableJoint>();
         _handRigidbody = _hand.GetComponent<Rigidbody>();
@@ -46,7 +45,7 @@ public class RobotArm : MonoBehaviour
         {
             _extendCooldown -= Time.deltaTime;
         }
-        
+
         if (_reduceCooldown > 0)
         {
             _reduceCooldown -= Time.deltaTime;
@@ -68,8 +67,10 @@ public class RobotArm : MonoBehaviour
         {
             _extendPitch = MinExtendPitch;
         }
-        _extendSoundEffect.Play(_extendPitch);
 
+        _extendSoundEffect.Play(_extendPitch);
+        _extendParticles.Play();
+        
         Vector3 position = _armParts.Last().transform.position + _armParts.Last().transform.forward;
         Quaternion rotation = _armParts.Last().transform.rotation;
 
@@ -90,18 +91,19 @@ public class RobotArm : MonoBehaviour
 
         if (_reduceCooldown > 0) return;
         _reduceCooldown = ResizeCooldown;
-        
+
         _extendPitch -= ExtendPitchIncrease;
         if (_extendPitch <= MinExtendPitch)
         {
             _extendPitch = MaxExtendPitch;
         }
+
         _extendSoundEffect.Play(_extendPitch);
-        
+
         RemoveLastPart();
     }
 
-    public void Reset()
+    public void Reset(RobotArmPart _untilRobotArmPart = null)
     {
         if (_armParts.Count <= initArmsQuantity)
         {
@@ -109,11 +111,23 @@ public class RobotArm : MonoBehaviour
             _reduceCooldown = 0f;
             return;
         }
-        
+
         _extendCooldown = float.MaxValue;
         _reduceCooldown = float.MaxValue;
+        RobotArmPart last = _armParts.Last();
         RemoveLastPart();
-        Reset();
+
+        if (_untilRobotArmPart != null)
+        {
+            if (_untilRobotArmPart == last || _untilRobotArmPart.gameObject == _hand)
+            {
+                _extendCooldown = 0f;
+                _reduceCooldown = 0f;
+                return;
+            }
+        }
+
+        Reset(_untilRobotArmPart);
     }
 
     private void RemoveLastPart()
@@ -125,7 +139,7 @@ public class RobotArm : MonoBehaviour
         lastRobotArmPart = _armParts.Last();
         ConnectHandTo(lastRobotArmPart);
     }
-    
+
     private void ConnectHandTo(RobotArmPart robotArmPart)
     {
         _handJoint.connectedBody = null;
@@ -135,6 +149,5 @@ public class RobotArm : MonoBehaviour
         _handJoint.transform.position = robotArmPart.transform.position + robotArmPart.transform.forward;
         _handJoint.transform.rotation = robotArmPart.transform.rotation;
         _handJoint.connectedBody = robotArmPart.RigidBody;
-        
     }
 }

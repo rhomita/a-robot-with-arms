@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace Puzzle
 {
-    public class Button : DoorTrigger
+    public class Button : Trigger
     {
         [Header("Behaviour")]
         [SerializeField] private Collider _triggerCollider;

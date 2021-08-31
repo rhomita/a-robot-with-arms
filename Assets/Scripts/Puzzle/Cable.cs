@@ -7,7 +7,7 @@ using UnityEngine;
 public class Cable : MonoBehaviour
 {
     [Header("Behaviour")] 
-    [SerializeField] private DoorTrigger _doorTrigger;
+    [SerializeField] private Trigger trigger;
     
     [Header("Visual")] 
     [SerializeField] private Material _activatedMaterial;
@@ -23,8 +23,8 @@ public class Cable : MonoBehaviour
     
     void Start()
     {
-        _doorTrigger.OnActivateTrigger += Activate;
-        _doorTrigger.OnDeactivateTrigger += Deactivate;
+        trigger.OnActivateTrigger += Activate;
+        trigger.OnDeactivateTrigger += Deactivate;
     }
     
     void Activate()

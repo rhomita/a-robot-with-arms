@@ -2,7 +2,7 @@
 
 namespace Puzzle
 {
-    public abstract class DoorTrigger : MonoBehaviour
+    public abstract class Trigger : MonoBehaviour
     {
         public delegate void OnActivateDelegate();
         public OnActivateDelegate OnActivateTrigger;

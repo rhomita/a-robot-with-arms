@@ -1,6 +1,7 @@
 ﻿using Manager;
 using UnityEditor.SearchService;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 namespace UI
 {
@@ -13,6 +14,15 @@ namespace UI
         {
             _sceneLoader.GoToScene(LEVEL_ONE);
         }
+
+        void Start()
+        {
+            if (Input.GetKeyDown(KeyCode.Return))
+            {
+                Play();
+            }    
+        }
+        
 
         public void Exit()
         {

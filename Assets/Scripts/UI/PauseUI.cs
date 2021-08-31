@@ -5,18 +5,15 @@ namespace UI
 {
     public class PauseUI : MonoBehaviour
     {
-        public void Resume()
-        {
-            GameManager.Instance.Resume();
-        }
-        
         public void Restart()
         {
+            gameObject.SetActive(false);
             GameManager.Instance.Restart();
         }
 
         public void MainMenu()
         {
+            gameObject.SetActive(false);
             GameManager.Instance.GoToMainMenu();
         }
     }

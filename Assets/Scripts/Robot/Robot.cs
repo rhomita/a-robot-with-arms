@@ -41,7 +41,7 @@ public class Robot : MonoBehaviour
 
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.H))
+        if (Input.GetKeyDown(KeyCode.T))
         {
             ResetArms();
         }
