@@ -263,5 +263,6 @@ MonoBehaviour:
   audioMixerGroup: {fileID: -8902615211574691725, guid: 86afe474e5860a949b95d1308a16f779, type: 2}
   clips:
   - {fileID: 8300000, guid: 0d77f0e8f23a4f14ca88a86e4c599993, type: 3}
-  volume: 0.6
+  volume: 0.3
   spatialBlend: 0
+  _stopOnPlay: 0

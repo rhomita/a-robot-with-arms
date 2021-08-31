@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Audio;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
@@ -10,6 +11,7 @@ public class Robot : MonoBehaviour
 {
     [SerializeField] private Rigidbody _body;
     [SerializeField] private List<RobotArm> _arms = new List<RobotArm>();
+    [SerializeField] private AudioSource _walkingAudioSource;
 
     private int _armSelected;
     private bool _armsEnabled = false;
@@ -23,9 +25,12 @@ public class Robot : MonoBehaviour
     private const float TurnSpeed = 3f;
     private const float CooldownToResetarms = 2f;
 
+    private SoundEffect _switchSoundEffect;
+
     void Awake()
     {
         _animator = transform.GetComponent<Animator>();
+        _switchSoundEffect = transform.GetComponent<SoundEffect>();
     }
 
     void Start()
@@ -43,6 +48,7 @@ public class Robot : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.Space))
         {
+            _switchSoundEffect.Play(3f);
             _armsEnabled = !_armsEnabled;
             if (_armsEnabled)
             {
@@ -60,12 +66,12 @@ public class Robot : MonoBehaviour
         _heightInput = Input.GetAxisRaw("Height");
         if (_armsEnabled)
         {
-            if (Input.GetKey(KeyCode.LeftShift))
+            if (Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift))
             {
                 _arms[_armSelected].Extend();
             }
 
-            if (Input.GetKey(KeyCode.LeftControl))
+            if (Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.RightControl))
             {
                 _arms[_armSelected].Reduce();
             }
@@ -77,6 +83,7 @@ public class Robot : MonoBehaviour
         if (_armsEnabled)
         {
             _animator.SetBool("IsMoving", false);
+            _walkingAudioSource.Stop();
             _arms[_armSelected].Move(new Vector3(_input.x, _heightInput, _input.y));
         }
         else
@@ -86,6 +93,11 @@ public class Robot : MonoBehaviour
 
             if (isMoving)
             {
+                if (!_walkingAudioSource.isPlaying)
+                {
+                    _walkingAudioSource.Play();
+                }
+
                 if (_cooldownToResetArms >= 0)
                 {
                     _cooldownToResetArms -= Time.deltaTime;
@@ -103,6 +115,7 @@ public class Robot : MonoBehaviour
             }
             else
             {
+                _walkingAudioSource.Stop();
                 _body.velocity = Vector3.zero;
             }
         }

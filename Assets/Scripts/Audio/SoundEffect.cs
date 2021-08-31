@@ -10,6 +10,7 @@ namespace Audio
         [SerializeField] private List<AudioClip> clips;
         [SerializeField] [Range(0f, 1f)] private float volume;
         [SerializeField] [Range(0f, 1f)] private float spatialBlend = 1f;
+        [SerializeField] private bool _stopOnPlay = false;
 
         private AudioSource audioSource;
 
@@ -25,7 +26,7 @@ namespace Audio
 
         public void Play(float pitch = 1f)
         {
-            if (audioSource.isPlaying) return;
+            if (!_stopOnPlay && audioSource.isPlaying) return;
             int random = Random.Range(0, clips.Count);
             AudioClip clip = clips[random];
             audioSource.Stop();

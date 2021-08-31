@@ -39,7 +39,7 @@ public class GameManager : MonoBehaviour
 
         private void Start()
         {
-            LockCursor();
+            Resume();
         }
 
         private void Update()
