@@ -1,2 +1,3 @@
 # A ROBOT with ARMS
-https://rhomita.itch.io/a-robot-with-arms
+- Play here: https://rhomita.itch.io/a-robot-with-arms
+- Video explaining how I did it: https://youtu.be/6HUlG9b8ro8
